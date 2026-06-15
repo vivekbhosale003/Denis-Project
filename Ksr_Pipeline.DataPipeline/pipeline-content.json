@@ -1,0 +1,98 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "name": "Copy data from sample data to Lakehouse file",
+        "description": "Use this template to copy data from sample data (NYC Taxi - Green) to specified file folders in Lakehouse.",
+        "type": "Copy",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "source": {
+            "type": "ParquetSource",
+            "storeSettings": {
+              "type": "AzureBlobStorageReadSettings",
+              "recursive": false,
+              "wildcardFolderPath": "green/puYear=*/puMonth=*",
+              "wildcardFileName": "*.parquet",
+              "enablePartitionDiscovery": false
+            },
+            "formatSettings": {
+              "type": "ParquetReadSettings"
+            },
+            "datasetSettings": {
+              "annotations": [],
+              "linkedService": {
+                "name": "nyc_taxi_green",
+                "properties": {
+                  "type": "AzureBlobStorage",
+                  "typeProperties": {
+                    "containerUri": "https://azureopendatastorage.blob.core.windows.net/nyctlc",
+                    "authenticationType": "Anonymous"
+                  }
+                }
+              },
+              "type": "Parquet",
+              "typeProperties": {
+                "location": {
+                  "type": "AzureBlobStorageLocation",
+                  "container": "nyctlc"
+                },
+                "compressionCodec": "snappy"
+              },
+              "schema": []
+            }
+          },
+          "sink": {
+            "type": "ParquetSink",
+            "storeSettings": {
+              "type": "LakehouseWriteSettings"
+            },
+            "formatSettings": {
+              "type": "ParquetWriteSettings",
+              "enableVertiParquet": false
+            },
+            "datasetSettings": {
+              "annotations": [],
+              "linkedService": {
+                "name": "Ksr_Lakehouse",
+                "properties": {
+                  "annotations": [],
+                  "type": "Lakehouse",
+                  "typeProperties": {
+                    "workspaceId": "a3d14dee-a181-4456-9871-5aa7b14c8fa9",
+                    "artifactId": "0978e6f4-7296-46e8-95c1-47f5b69937c1",
+                    "rootFolder": "Files"
+                  }
+                }
+              },
+              "type": "Parquet",
+              "typeProperties": {
+                "location": {
+                  "type": "LakehouseLocation"
+                },
+                "compressionCodec": "snappy"
+              },
+              "schema": []
+            }
+          },
+          "enableStaging": false,
+          "translator": {
+            "type": "TabularTranslator",
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          }
+        }
+      }
+    ]
+  }
+}
